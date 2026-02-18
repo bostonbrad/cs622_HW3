@@ -55,17 +55,36 @@ public class Main {
             }
             // ---
 
-            System.out.println();
-            System.out.println("Using Inverted Index Search:");
+            
+            // Build both indices
             InvertedIndex invIndex = new InvertedIndex();
+            SkipListIndex skipIndex = new SkipListIndex();
             for (Article a : allArticles) {
                 invIndex.addDocument(a.getId(), a.getTitle());
+                skipIndex.addDocument(a.getId(), a.getTitle());
             }
+            System.out.println();
+            System.out.println("Using Inverted Index Search:");
             Set<Integer> results = invIndex.search(keyword);
             for (Integer id : results) {
                 Article a = allArticles.get(id);
                 System.out.println(" - " + id + ": " + a.getTitle());
             }
+
+            // Search and Print Skip List (NEW)
+            System.out.println("--- Skip List ---");
+            List<Integer> skipResults = skipIndex.search(keyword);
+            for (Integer id : skipResults) {
+                // Find the article object for this ID to print the title
+                // Note: This lookup is just for printing, not part of the search logic
+                for(Article a : allArticles) {
+                    if(a.getId() == id) {
+                        System.out.println(" - " + id + ": " + a.getTitle());
+                        break;
+                    }
+                }
+            }
+            
         }
 
         // C. The Benchmarking Loop (for Task 3)
