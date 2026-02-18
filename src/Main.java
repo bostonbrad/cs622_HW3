@@ -71,8 +71,9 @@ public class Main {
                 System.out.println(" - " + id + ": " + a.getTitle());
             }
 
-            // Search and Print Skip List (NEW)
-            System.out.println("--- Skip List ---");
+            // Search and Print Skip List
+            System.out.println();
+            System.out.println("Using Skip List Search:");
             List<Integer> skipResults = skipIndex.search(keyword);
             for (Integer id : skipResults) {
                 // Find the article object for this ID to print the title
@@ -90,17 +91,20 @@ public class Main {
         // C. The Benchmarking Loop (for Task 3)
         int[] articleCounts = {1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
         String keyword = "database";
-
-        System.out.println("Articles | Brute Force (ns) | Inverted Index (ns)");
+        System.out.println("\n==============================");
+        System.out.println("Articles | Brute Force (ns) | Inverted Index (ns) | SkipList(ns)");
 
         for (int count : articleCounts) {
             // Get a sublist of the data
+            if (count > allArticles.size()) break; // Safety check
             List<Article> subset = allArticles.subList(0, Math.min(count, allArticles.size()));
 
             // 1. Build the Inverted Index for this subset
             InvertedIndex invIndex = new InvertedIndex();
+            SkipListIndex testSkipIndex = new SkipListIndex();
             for (Article a : subset) {
                 invIndex.addDocument(a.getId(), a.getTitle());
+                testSkipIndex.addDocument(a.getId(), a.getTitle());
             }
 
             // 2. Measure Brute Force Search
@@ -117,7 +121,12 @@ public class Main {
             invIndex.search(keyword);
             long endInv = System.nanoTime();
 
-            System.out.printf("%8d | %16d | %18d\n", count, (endBF - startBF), (endInv - startInv));
+            // 4. Measure Skip List Search
+            long startSkip = System.nanoTime();
+            testSkipIndex.search(keyword);
+            long endSkip = System.nanoTime();
+
+            System.out.printf("%8d | %16d | %18d | %12d\n", count, (endBF - startBF), (endInv - startInv), (endSkip - startSkip));
         }
     }
 }
