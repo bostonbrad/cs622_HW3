@@ -13,6 +13,9 @@ public class DblpHandler extends DefaultHandler {
     // 1. Add a flag to track if we are inside a title
     private boolean insideTitle = false;
 
+    // Add a counter for IDs
+    private int nextId = 1;
+
     public List<Article> getArticles() {
         return articles;
     }
@@ -24,8 +27,11 @@ public class DblpHandler extends DefaultHandler {
             elementValue = new StringBuilder();
         }
 
-        if (qName.equalsIgnoreCase("article") || qName.equalsIgnoreCase("inproceedings")) {
+        if (qName.equalsIgnoreCase("article")
+                || qName.equalsIgnoreCase("inproceedings")
+                || qName.equalsIgnoreCase("incollection")) { // include incollection
             currentArticle = new Article();
+            currentArticle.setId(nextId++); // assign unique id
             // If you want the ID, grab it here: attributes.getValue("key");
         } else if (qName.equalsIgnoreCase("title")) {
             insideTitle = true; // Turn on the flag
@@ -46,7 +52,9 @@ public class DblpHandler extends DefaultHandler {
             if (qName.equalsIgnoreCase("title")) {
                 currentArticle.setTitle(elementValue.toString().trim());
                 insideTitle = false; // 3. Turn off the flag
-            } else if (qName.equalsIgnoreCase("article") || qName.equalsIgnoreCase("inproceedings")) {
+            } else if (qName.equalsIgnoreCase("article")
+                    || qName.equalsIgnoreCase("inproceedings")
+                    || qName.equalsIgnoreCase("incollection")) { // include incollection
                 articles.add(currentArticle);
             }
         }

@@ -71,6 +71,5 @@ public class InvertedIndex {
         System.out.println("\nSearch results for 'fox': " + invertedIndex.search("fox"));
 // Search for multiple terms
         System.out.println("\nSearch results for 'fox' AND 'lazy': " + invertedIndex.searchMultipleTerms(Arrays.asList("fox", "lazy")));
-        return;
     }
 }

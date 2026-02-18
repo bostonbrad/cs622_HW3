@@ -1,6 +1,6 @@
 
 import java.io.File;
-import java.util.List;
+import java.util.*;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -37,10 +37,40 @@ public class Main {
         // B. Parse the XML and store articles in a simple List first
         // This makes benchmarking much easier than re-parsing the file 100 times.
         List<Article> allArticles = parseDblp("data/dblp_small.xml");
+        System.out.println("Number of Articles: " + allArticles.size());
+
+        String[] keywords = {"Database", "Chat", "Query"};
+
+        for (String keyword : keywords) {
+            System.out.println("\n==============================");
+            System.out.println("Search results for keyword: " + keyword);
+            System.out.println("Using Brute Force Search:");
+
+            // --- This block has been updated as suggested:
+            for (Article a : allArticles) {
+                String title = a.getTitle();
+                if (title != null && title.toLowerCase().contains(keyword.toLowerCase())) {
+                    System.out.println(" - " + a.getId() + ": " + title);
+                }
+            }
+            // ---
+
+            System.out.println();
+            System.out.println("Using Inverted Index Search:");
+            InvertedIndex invIndex = new InvertedIndex();
+            for (Article a : allArticles) {
+                invIndex.addDocument(a.getId(), a.getTitle());
+            }
+            Set<Integer> results = invIndex.search(keyword);
+            for (Integer id : results) {
+                Article a = allArticles.get(id);
+                System.out.println(" - " + id + ": " + a.getTitle());
+            }
+        }
 
         // C. The Benchmarking Loop (for Task 3)
         int[] articleCounts = {1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-        String keyword = "chatbot";
+        String keyword = "database";
 
         System.out.println("Articles | Brute Force (ns) | Inverted Index (ns)");
 
